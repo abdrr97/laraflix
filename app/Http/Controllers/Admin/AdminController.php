@@ -24,7 +24,7 @@ class AdminController extends Controller
         $movies = (object) ['text_color' => 'text-danger', 'icon' => 'fa-film', 'name' => 'movies', 'count' => Movie::count()];
         $roles = (object) ['text_color' => 'text-warning', 'icon' => 'fa-chess', 'name' => 'roles', 'count' => Role::count()];
         $permissions = (object) ['text_color' => 'text-success', 'icon' => 'fa-window-restore', 'name' => 'permissions', 'count' => Permission::count()];
-        $comments = Comment::all()->count();
+        $comments = Comment::count();
 
         $premium_users = User::whereRoleIs(['premium_user'])->count();
         $general = [
@@ -59,13 +59,13 @@ class AdminController extends Controller
         $_pages = Page::all();
         return view('admin.pages.index', ['pages' => $_pages]);
     }
-    public function page(Page $page)
+    public function page(Request $request, Page $page)
     {
-        $type = request()->input('type');
         $page->update([
             'title' => request()->input('title'),
-            'body' => request()->input($type)
+            'body' => request()->input($request->type)
         ]);
+
         return redirect(route('admin.pages.index'));
     }
 }

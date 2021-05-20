@@ -50,13 +50,13 @@ class UserController extends Controller
         ]);
 
         $user = User::create([
-            'username' => $request->input('username'),
+            'username' => $request->username,
             'profile_image' => 'avatar.png',
-            'email' => $request->input('email'),
-            'password' => bcrypt($request->input('password')),
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
         ]);
 
-        $role = Role::find($request->input('role_id'));
+        $role = Role::find($request->role_id);
 
         $user->attachRole($role);
 
@@ -67,8 +67,7 @@ class UserController extends Controller
     public function updateprofile()
     {
         $user = auth()->user();
-        return view('admin.users.profile')
-            ->with(['user' => $user]);
+        return view('admin.users.profile')->with(['user' => $user]);
     }
 
 
@@ -78,15 +77,17 @@ class UserController extends Controller
         $user->username = $request->input('username');
         $user->email = $request->input('email');
 
-        $user->banned_until =  empty(!$request->input('banned_until')) ? $request->input('banned_until') : null;
+        $user->banned_until =  empty(!$request->banned_until) ? $request->banned_until : null;
 
         $user->save();
 
         // Update role of the user
-        if (isset($user->roles)) {
+        if (isset($user->roles))
+        {
             $roles = $user->roles;
 
-            foreach ($roles as $value) {
+            foreach ($roles as $value)
+            {
                 $user->detachRole($value);
             }
         }
@@ -99,15 +100,19 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if ($user == auth()->user()) {
-            if ($request->hasFile('profile_image')) {
+        if ($user == auth()->user())
+        {
+            if ($request->hasFile('profile_image'))
+            {
                 $file = $request->file('profile_image');
                 $ext  = $file->extension();
                 $is_valid_image = Str::contains($ext, ['png', 'jpg', 'jpeg']);
-                if ($is_valid_image) {
+                if ($is_valid_image)
+                {
                     $file->store('users/' . $user->id . '/images', 'public');
                     $image_name =  $file->hashName();
-                    if (isset($user->profile_image) && $user->profile_image != 'avatar.png') {
+                    if (isset($user->profile_image) && $user->profile_image != 'avatar.png')
+                    {
                         $image_path = '/public/users/' . $user->id . '/images/' . $user->profile_image;
                         Storage::delete($image_path);
                     }
@@ -122,7 +127,8 @@ class UserController extends Controller
                 'email' => $request->email
             ]);
 
-            if ($user->hasRole('super_admin')) {
+            if ($user->hasRole('super_admin'))
+            {
                 return redirect()->route('admin.edit');
             }
             return redirect()->route('admin.user.updateprofile');
@@ -132,7 +138,8 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        try {
+        try
+        {
             $roles = Role::with('permissions')->get();
             $permissions = Permission::all();
 
@@ -144,8 +151,11 @@ class UserController extends Controller
             ];
 
             return view('admin.users.users_edit')->with($params);
-        } catch (ModelNotFoundException $ex) {
-            if ($ex instanceof ModelNotFoundException) {
+        }
+        catch (ModelNotFoundException $ex)
+        {
+            if ($ex instanceof ModelNotFoundException)
+            {
                 return response()->view('errors.' . '404');
             }
         }
@@ -155,15 +165,19 @@ class UserController extends Controller
     public function show(User $user)
     {
         //
-        try {
+        try
+        {
             $params = [
                 'title' => 'Delete User',
                 'user' => $user,
             ];
 
             return view('admin.users.users_delete')->with($params);
-        } catch (ModelNotFoundException $ex) {
-            if ($ex instanceof ModelNotFoundException) {
+        }
+        catch (ModelNotFoundException $ex)
+        {
+            if ($ex instanceof ModelNotFoundException)
+            {
                 return response()->view('errors.' . '404');
             }
         }
@@ -172,19 +186,24 @@ class UserController extends Controller
     // Remove User from DB with detaching Role
     public function destroy(User $user)
     {
-        try {
+        try
+        {
             // Detach from Role
             $roles = $user->roles;
 
-            foreach ($roles as $value) {
+            foreach ($roles as $value)
+            {
                 $user->detachRole($value);
             }
 
             $user->delete();
 
             return redirect()->route('admin.users.index');
-        } catch (ModelNotFoundException $ex) {
-            if ($ex instanceof ModelNotFoundException) {
+        }
+        catch (ModelNotFoundException $ex)
+        {
+            if ($ex instanceof ModelNotFoundException)
+            {
                 return response()->view('errors.' . '404');
             }
         }
@@ -203,11 +222,13 @@ class UserController extends Controller
     }
     public function change_password(Request $request, User $user)
     {
-        if (!(Hash::check($request->get('current-password'), $user->password))) {
+        if (!(Hash::check($request->get('current-password'), $user->password)))
+        {
             return redirect()->back()->with("error", "Your current password does not matches with the password you provided. Please try again.");
         }
 
-        if (strcmp($request->get('current-password'), $request->get('new-password')) == 0) {
+        if (strcmp($request->get('current-password'), $request->get('new-password')) == 0)
+        {
             return redirect()->back()->with("error", "New Password cannot be same as your current password. Please choose a different password.");
         }
 

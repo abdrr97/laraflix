@@ -45,12 +45,13 @@ class CastController extends Controller
             'name' => $request->name,
             'description' => $request->description,
         ]);
-        $movies_id = $request->input('movies');
-        if ($movies_id) {
+        $movies_id = $request->movies;
+        if ($movies_id)
+        {
             $movies = Movie::whereIn('id', $movies_id)->get();
             $cast->movies()->attach($movies);
         }
-        return redirect(route('admin.casts.index'));
+        return redirect()->route('admin.casts.index');
     }
 
     /**
@@ -72,7 +73,9 @@ class CastController extends Controller
      */
     public function edit(Cast $cast)
     {
-        return view('admin.casts.edit', compact('cast'));
+        return view('admin.casts.edit', [
+            'cast' => $cast
+        ]);
     }
 
     /**

@@ -16,16 +16,21 @@
                     </a>
 
                     <div class="sign__group">
-                        <input type="text" class="sign__input @error('email') is-invalid @enderror" placeholder="Email" value="{{ old('email') ?? 'abdrr97@gmail.com' }}" autocomplete="email" name="email" autofocus id="email" type="email">
+                        <input type="text" class="sign__input @error('email') is-invalid @enderror" placeholder="Email"
+                            value="{{ old('email') ?? 'admin@admin.com' }}" autocomplete="email" name="email" autofocus
+                            id="email" type="email">
 
                     </div>
 
                     <div class="sign__group">
-                        <input id="password" placeholder="Password" type="password" class="sign__input @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" value="password">
+                        <input id="password" placeholder="Password" type="password"
+                            class="sign__input @error('password') is-invalid @enderror" name="password" required
+                            autocomplete="current-password" value="password">
                     </div>
 
                     <div class="sign__group sign__group--checkbox">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                            {{ old('remember') ? 'checked' : '' }}>
                         <label for="remember">Remember Me</label>
                     </div>
 
